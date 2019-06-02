@@ -165,7 +165,7 @@
       </el-tab-pane>
       <el-tab-pane
         label="链接详情"
-        v-if="this.$props.todo.status==='active'&&this.getPeersTable().length>0"
+        v-if="this.$props.todo.status==='active'"
       >
         <el-table
           :data="this.getPeersTable()"
@@ -238,7 +238,7 @@ export default {
       dir: this.$props.todo.dir,
       connectInterval: null,
       name: null,
-      files: [],
+      files: this.$props.todo.files,
       checks: [],
       defaultProps: {
         children: 'children',
@@ -348,9 +348,9 @@ export default {
       let map = {};
       let arr = [];
       const step = "&emsp;&emsp;&emsp;&emsp;";
-      if (this.files === null || this.files.length === 0) {
-        this.files = this.$props.todo.files;
-      }
+      // if (this.files === null || this.files.length === 0) {
+        // this.files = this.$props.todo.files;
+      // }
       this.files.forEach(it => {
         var path = it.path.replace(this.dir.replace("\\", "/"), "");
         if (path[0] === "/") {
