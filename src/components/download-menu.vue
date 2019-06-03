@@ -37,7 +37,7 @@
         <span slot="title">已经结束
           <el-badge
             class="mark"
-            :value="this.$store.state.globalStat.numStoppedTotal"
+            :value="this.$store.state.globalStat.numStopped"
           />
         </span>
       </el-menu-item>
