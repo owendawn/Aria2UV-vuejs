@@ -261,6 +261,7 @@ export default {
   store,
   data() {
     return {
+      timeout:null,
       outerVisible: false,
       outerVisible2: false,
       outerVisible3: false,
@@ -289,24 +290,37 @@ export default {
   },
 
   mounted() {
-    let that = this;
-    (function update() {
-      if (that.$route.fullPath === "/download") {
-        that.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.tellActive", id: common.getReqId(common.reqType.sendTellActiveREQ) });
-        setTimeout(() => {
-          update();
-        }, 3000);
-      }
-    })();
+    this.refreshData();
   },
   updated() {
     // console.log(this.$store)
+  },
+  beforeDestroy(){
+     if(that.timeout!==null){
+          clearTimeout(that.timeout);
+        }
   },
   computed: mapState({
     toDos: state => state.toDownloads,
     globalOption: state => state.globalOption
   }),
   methods: {
+    refreshData(){
+      
+      let that = this;
+      (function update() {
+        if(that.timeout!==null){
+          clearTimeout(that.timeout);
+        }
+        if (that.$route.fullPath === "/download") {
+          that.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.tellActive", id: common.getReqId(common.reqType.sendTellActiveREQ) });
+          that.timeout=setTimeout(() => {
+            that.timeout=null;
+            update();
+          }, 3000);
+        }
+      })();
+    },
     refreshOptions() {
       this.linkJob['dir'] = this.globalOption['dir'];
       this.linkJob['max-connection-per-server'] = Number(this.globalOption['max-connection-per-server']);

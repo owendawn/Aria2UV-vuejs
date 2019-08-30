@@ -113,25 +113,32 @@
       </el-tab-pane>
       <el-tab-pane
         label="区块信息"
-        v-if="this.type!=='FTP'&&this.pieces.length>0"
+        v-if="this.type!=='FTP'"
       >
         <div class="piece-info">
-          <span :title="this.pieces.filter(it=>it===1).length+'块'"><span
+          <span :title="this.pieces.complete+'/'+this.pieces.total+'块'">
+            <!-- <span
               class="piece filled"
               style="vertical-align:middle"
-            ></span> 已完成</span>
-          <span :title="this.pieces.filter(it=>it===0).length+'块'"><span
+            ></span>  -->
+            <el-badge :value="this.pieces.complete" class="item" ><el-button size="small" type="success">已完成</el-button></el-badge>
+            </span>
+            &emsp;&emsp;&emsp;&emsp;
+          <span :title="(this.pieces.total-this.pieces.complete) +'/'+this.pieces.total+'块'">
+            <!-- <span
               class="piece"
               style="vertical-align:middle"
-            ></span> 未完成</span>
+            ></span>  -->
+            <el-badge :value="this.pieces.total-this.pieces.complete" class="item"><el-button size="small">未完成</el-button></el-badge>
+            </span>
         </div>
         <div>
-          <span
-            class="piece"
-            v-for="(it,index) in this.pieces"
-            :key="index"
-            :class="it===0?'':'filled'"
-          ></span>
+          <el-progress
+           :text-inside="true" 
+           :stroke-width="66" 
+           :percentage="(this.pieces.complete/this.pieces.total*100).toFixed(4)" 
+           status="success">
+           </el-progress>
         </div>
       </el-tab-pane>
       <el-tab-pane
@@ -155,6 +162,7 @@
           show-checkbox
           default-expand-all
           node-key="id"
+          :render-content="this.drawTreeLine"
           ref="tree"
           highlight-current
           :props="defaultProps"
@@ -167,6 +175,13 @@
         label="链接详情"
         v-if="this.$props.todo.status==='active'"
       >
+      <el-button 
+      type="primary" 
+      :loading="this.hasLaodPeers&&this.getPeersTable().length==0"
+      @click="this.getPeerInfos"
+      >
+        加载{{this.hasLaodPeers?(this.getPeersTable().length>0?"":"......"):""}}
+        </el-button>
         <el-table
           :data="this.getPeersTable()"
           style="width: 100%;"
@@ -234,35 +249,16 @@ export default {
       common,
       isCollapse: true,
       type: null,
-      pieces: this.getPieces(),
+      hasLaodPeers:false,
       dir: this.$props.todo.dir,
       connectInterval: null,
       name: null,
+      pieces:this.getPieces(),
       files: this.$props.todo.files,
       checks: [],
       defaultProps: {
         children: 'children',
-        label(data, node) {
-          // console.log(node)
-          return (
-            !node.isLeaf ?
-              "♜ "
-              : "✉ "
-              + common.getSize(data.data.data.length) + " - "
-              + (data.data.data.length === "0" ?
-                "0" :
-                (
-                  Math.round(
-                    Number(data.data.data.completedLength) * 10000
-                    / Number(data.data.data.length)
-                  ) / 100
-                  + "% | "
-                )
-              )
-          )
-
-            + data.name;
-        }
+        label(data, node) { return (data.name); }
       }
     };
   },
@@ -286,16 +282,31 @@ export default {
     }
   },
   methods: {
+    drawTreeLine(h, { node, data, store }){
+      return (<span title={data.name}>{
+        (!node.isLeaf ?
+              "♜ "
+              : "✉ "
+              + common.getSize(data.data.data.length) + " - "
+              + (data.data.data.length === "0" ?
+                "0" :
+                (
+                  Math.round(
+                    Number(data.data.data.completedLength) * 10000
+                    / Number(data.data.data.length)
+                  ) / 100
+                  + "% | "
+                )
+              )
+        ) + data.name
+      }</span>);
+    },
+    getPeerInfos(){
+      this.hasLaodPeers=true;
+        this.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.getPeers", id: common.getReqId(common.reqType.sendGetPeersREQ), params: [this.$props.todo.gid] })
+    },
     tabChange(v, e) {
-      if (v.paneName === "3") {
-        this.connectInterval = setInterval(() => {
-          this.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.getPeers", id: common.getReqId(common.reqType.sendGetPeersREQ), params: [this.$props.todo.gid] })
-        }, 1000)
-      } else {
-        if (this.connectInterval) {
-          clearInterval(this.connectInterval);
-        }
-      }
+     
     },
     handleChange(val) {
       console.log(val);
@@ -387,31 +398,54 @@ export default {
       this.checks = this.$refs.tree.getCheckedKeys();
     },
     getPieces() {
-      if (this.isCollapse) {
-        return [];
-      }
-      let arr1 = [];
-      let complete = 0;
-      let alls = this.$props.todo.numPieces;
-      if (this.$props.todo.bitfield) {
-        arr1 = common.parseHexStringToBitArray(this.$props.todo.bitfield);
-        complete = arr1.filter(it => it === 1).length;
-      }
-      let arr2 = [];
-      let start = 0;
-      alls = 0;
-      this.$props.todo.files.forEach(it => {
-        let size = Math.ceil(it.length / this.$props.todo.pieceLength);
-        if (it.selected === "true") {
-          arr2 = arr2.concat(arr1.slice(start, size));
-          alls += it.length;
-        }
-        start += Math.ceil(it.length / this.$props.todo.pieceLength);
-      });
-
-      arr1 = arr2;
-      alls = Math.floor(alls / Number(this.$props.todo.pieceLength));
-      return arr1;
+      // if (this.isCollapse) {
+      //   return {total:1,complete:1};
+      // }
+      // let arr1 = [];
+      // let complete = 0;
+      // let total=0;
+      // if (this.$props.todo.bitfield) {
+      //   for(let i=0;i<this.$props.todo.bitfield.length;i++){
+      //     total+=4;
+      //     switch(this.$props.todo.bitfield.charAt(i)){
+      //       case "0":{
+      //         // arr1 = arr1.concat(0, 0, 0, 0);
+      //         break;
+      //       }
+      //       case "8":{
+      //         // arr1 = arr1.concat(1, 0, 0, 0)
+      //         complete+=1;
+      //         break;
+      //       }
+      //       case "c":{
+      //         // arr1 = arr1.concat(1, 1, 0, 0)
+      //         complete+=2;
+      //         break;
+      //       }
+      //       case "e":{
+      //         // arr1 = arr1.concat(1, 1, 1, 0)
+      //         complete+=3;
+      //         break;
+      //       }
+      //       case "f":{
+      //         // arr1 = arr1.concat(1, 1, 1, 1)
+      //         complete+=4;
+      //         break;
+      //       }
+      //     }
+      //   }
+      // }
+      // let size = 0;
+      // this.$props.todo.files.forEach(it => {
+      //   if (it.selected === "false") {
+      //     size+=Number(it.length);
+      //   }
+      // });
+      // return {total,complete};
+      return {
+        total:Number(this.$props.todo.numPieces),
+        complete:Math.round(Number(this.$props.todo.completedLength)/(Number(this.$props.todo.totalLength)/Number(this.$props.todo.numPieces)))
+      };
     },
     parsePeerInfo(peerid) {
       try {
@@ -524,8 +558,9 @@ export default {
   text-align: center;
   vertical-align: middle;
   border-bottom: 1px dashed silver;
-  margin-bottom: 16px;
-  padding-bottom: 8px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  padding-top: 8px;
 }
 .p-to-download .piece {
   width: 10px;
@@ -569,4 +604,9 @@ export default {
   padding-right: 18px;
   font-size: 11pt;
 }
+.p-to-download .el-badge__content {
+    color: #fff;
+    background-color: #b7bbbf;
+}
+
 </style>
