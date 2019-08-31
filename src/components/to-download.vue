@@ -3,6 +3,7 @@
   <el-collapse-item
     class="p-to-download"
     @change="handleChange"
+    ref="chartPane"
   >
     <template slot="title">
       <div class="download-header">
@@ -87,7 +88,10 @@
       type="border-card"
       @tab-click="this.tabClick"
     >
-      <el-tab-pane label=" 概况">
+      <el-tab-pane label=" 概况" >
+
+        <p-updown-chart ref="chart" style="height: 150px" :ups="this.ups" :downs="this.downs"></p-updown-chart>
+
         <el-table
           :data="this.getInfoTable()"
           style="width: 100%;font-size:1px;"
@@ -136,7 +140,12 @@
             </el-badge>
             </span>
         </div>
-        <div>
+        <div style="text-align: center">
+          <span>
+            <el-tag>分块大小：{{common.getSize(this.$props.todo.pieceLength)}}</el-tag>
+          </span>
+          <br>
+          <br>
           <el-progress
            :text-inside="true" 
            :stroke-width="66" 
@@ -214,9 +223,18 @@ import 'vue-awesome/icons/download'
 
 import store from "../store/modules/base/store.js"
 import common from "../assets/util/common.js"
+import ECharts from 'echarts'
+import 'echarts/lib/chart/radar'
+import 'echarts/lib/chart/line'
+import 'echarts/lib/chart/bar'
+import 'echarts/lib/chart/pie'
 
 import { setInterval, clearInterval, setTimeout } from 'timers';
+
 export default {
+  components:{
+    'v-chart': ECharts
+  },
   store,
   props: {
     todo: {
@@ -236,9 +254,15 @@ export default {
       pieces:this.getPieces(),
       files: this.$props.todo.files,
       checks: [],
+      ups:[],
+      downs:[],
+      times:[],
+      myChart:null,
+
     };
   },
   mounted() {
+    this.$refs.chart.$el.style.width=this.$refs.chartPane.$el.offsetWidth-50;
     if (this.$props.todo.bittorrent) {
       if (this.$props.todo.bittorrent.info) {
         this.type = "Torrent"
@@ -258,10 +282,25 @@ export default {
         ||this.$props.todo.files[0].uris[0].uri.substring(this.$props.todo.files[0].uris[0].uri.lastIndexOf("/") + 1)
       );
     }
+    setInterval(this.updateChartData,3000);
+  },
+  updated(){
+
   },
   methods: {
     tabClick(){
 
+    },
+    updateChartData(){
+      let time=new Date().getTime();
+      this.times.push(time);
+      this.ups.push([time,Number(this.$props.todo.uploadSpeed)]);
+      this.downs.push([time,Number(this.$props.todo.downloadSpeed)]);
+      while (this.ups.length>30){
+        this.times.shift();
+        this.ups.shift();
+        this.downs.shift();
+      }
     },
     getPeerInfos(){
       this.hasLaodPeers=true;
@@ -320,12 +359,11 @@ export default {
         { name: "任务状态", value: "<span title='" + this.$props.todo.errorMessage + "'>" + this.parseState(this.$props.todo.status, this.$props.todo) + "</span>" },
         { name: "连接数", value: this.$props.todo.connections },
         { name: "下载路径", value: this.$props.todo.dir },
-
       ];
       if (this.$props.todo.bittorrent) {
         let magnet = "magnet:?xt=urn:btih:" + this.$props.todo.infoHash;
         re.push({ name: "磁力链接", value: "<a href='" + magnet + "' target='_blank' style='text-decoration: none;'>" + magnet + "</a>" });
-        re.push({ name: "下载路径", value: "<textarea style='width:100%;resize:none;' rows=5>" + this.$props.todo.bittorrent.announceList.map(it => it[0]).join("\n") + "</textarea>" });
+        re.push({ name: "下载宣言", value: "<textarea style='width:100%;resize:none;' rows=5>" + this.$props.todo.bittorrent.announceList.map(it => it[0]).join("\n") + "</textarea>" });
       } else {
         re.push({ name: "链接地址", value: "<a href='" + this.$props.todo.files[0].uris[0].uri + "' target='_blank' style='text-decoration: none;'>" + this.$props.todo.files[0].uris[0].uri + "</a>" });
       }
