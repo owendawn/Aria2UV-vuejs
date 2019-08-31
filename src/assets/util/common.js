@@ -133,6 +133,15 @@ export default {
     return arr1;
   },
   countBitfield(text) {
+    if(!text){
+      return{
+        validate:false,
+        total:0,
+        complete:0,
+        uncomplete:0,
+        percent:"0%"
+      };
+    }
     var len = text.length;
     var p, one = 0;
     for (var i=0; i<len; i++) {
@@ -143,6 +152,7 @@ export default {
       }
     }
     return{
+      validate:true,
       total:4*len,
       complete:one,
       uncomplete:4*len-one,

@@ -50,7 +50,7 @@ export default {
   },
   mounted(){
     if (this.$props.todo.bittorrent) {
-      if (this.$props.todo.bittorrent.info) {
+      if (this.$props.todo.bitfield) {
         this.checks = this.$props.todo.files.filter(it => it.selected === 'true').map(it => it.index).concat();
       }
     }
@@ -112,7 +112,7 @@ export default {
             }
           }
         }
-      })
+      });
       return arr;
     },
     getFileTree() {
@@ -128,7 +128,7 @@ export default {
           this.$props.todo.gid,
           { "select-file": this.$refs.tree.getCheckedKeys().join(",") }
         ]
-      })
+      });
       setTimeout(() => {
         if (this.checks.sort().toString() !== this.$props.todo.files.filter(it => it.selected === 'true').map(it => it.index).sort().toString()) {
           console.info("任务下载文件确认已变更")

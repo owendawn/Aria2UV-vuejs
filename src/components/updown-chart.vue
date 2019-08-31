@@ -1,6 +1,5 @@
 <template>
-
-  <div style="width: 900px;height: 150px;" ref="chart"></div>
+  <div style="width:900px;height: 150px;" ref="chart"></div>
 </template>
 <script>
   import 'echarts/lib/chart/line'
@@ -95,8 +94,6 @@
       }
     },
     mounted() {
-      this.myChart = ECharts.init(this.$refs.chart);
-      this.myChart.setOption(this.chartOption);
     },
     watch:{
       ups(news,olds){
@@ -104,10 +101,21 @@
       },
       downs(news,olds){
         this.down=news;
-        this.myChart.setOption(this.chartOption);
+        if(this.$refs.chart.offsetWidth>0) {
+          if (!this.myChart) {
+            this.renderChart();
+          }else {
+            this.myChart.setOption(this.chartOption);
+          }
+        }
       }
     },
-    methods: {}
+    methods: {
+      renderChart(){
+        this.myChart = ECharts.init(this.$refs.chart);
+        this.myChart.setOption(this.chartOption);
+      }
+    }
   }
 </script>
 <style>

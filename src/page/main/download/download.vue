@@ -194,11 +194,12 @@
         label-width="150px"
         :model="this.metaJob"
       >
-        <el-form-item label="MetaLink地址">
-          <el-input
-            type="textarea"
-            v-model="metaJob.link"
-          ></el-input>
+        <el-form-item label="MetaLink">
+          <input
+            class="el-form-item__content"
+            type="file"
+            @change="changeMateLinkCode($event)"
+          >
         </el-form-item>
         <el-form-item label="下载路径">
           <el-input v-model="metaJob.dir">
@@ -281,6 +282,7 @@ export default {
         'split': 0,
       },
       metaJob: {
+        mateContent:null,
         link: '',
         dir: '',
         'max-connection-per-server': 0,
@@ -396,6 +398,14 @@ export default {
         that.btJob.btContent = this.result.replace("data:application/octet-stream;base64,", "");
       }
     },
+    changeMateLinkCode(e) {
+      let that = this;
+      let reader = new FileReader();
+      reader.readAsDataURL(e.target.files[0]);
+      reader.onload = function (e) {
+        that.metaJob.mateContent = this.result.replace("data:application/octet-stream;base64,", "");
+      }
+    },
     addBt(e) {
       this.$store.dispatch("sendToWebSocket",
         {
@@ -415,10 +425,10 @@ export default {
       this.$store.dispatch("sendToWebSocket",
         {
           jsonrpc: "2.0",
-          method: "aria2.addMetaLink",
+          method: "aria2.addMetalink",
           id: common.getReqId(common.reqType.sendAddMetalinkREQ),
           params: [
-            [this.metaJob.link],
+            this.metaJob.mateContent,
             this.metaJob
           ]
         }
