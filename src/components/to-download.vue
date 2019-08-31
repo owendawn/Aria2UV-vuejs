@@ -35,6 +35,11 @@
           </span>
           <span>
             <p-icon
+              name="upload"
+              width="12"
+              height="12"
+            /> {{this.common.getSize(this.$props.todo.uploadSpeed)+"/s"}}
+            <p-icon
               name="download"
               width="12"
               height="12"
@@ -219,6 +224,7 @@ import 'vue-awesome/icons/signal'
 import 'vue-awesome/icons/magnet'
 import 'vue-awesome/icons/file-alt'
 import 'vue-awesome/icons/download'
+import 'vue-awesome/icons/upload'
 
 
 import store from "../store/modules/base/store.js"
