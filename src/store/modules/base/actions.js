@@ -148,7 +148,6 @@ export default {
       .then(function (re) {
         switch (re.data.id.substring(0,re.data.id.indexOf("_"))) {
           case "sendGetPeersREQ":{
-            console.log(re)
             commit("setPeers",re.data.result)
             break;
           }
