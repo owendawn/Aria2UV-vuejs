@@ -3,6 +3,7 @@ import PanUtil from "../../../assets/util/PanUtil"
 import {
   Message
 } from 'element-ui';
+// import axios from 'axios'
 
 export default {
   initWebsocket({
@@ -16,6 +17,7 @@ export default {
     }
     let websocket = new WebSocket("ws://"+state.ip+":"+state.port+"/jsonrpc");
     commit("setWebsocket", websocket);
+
     websocket.onopen = function (evt) {
       console.log("open")
       commit("setLive", true);
@@ -130,6 +132,31 @@ export default {
       if (state.websocket.readyState !== common.readyState.OPEN) return;
       state.websocket.send(JSON.stringify(data));
     }, state.websocket.readyState === common.readyState.CONNECTING ? 3000 : 0);
+  },
+  postToAjax({
+               commit,
+               state
+             },data){
+    axios.post(
+      "http://"+state.ip+":"+state.port+"/jsonrpc",
+      data,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        }
+      })
+      .then(function (re) {
+        switch (re.data.id.substring(0,re.data.id.indexOf("_"))) {
+          case "sendGetPeersREQ":{
+            console.log(re)
+            commit("setPeers",re.data.result)
+            break;
+          }
+        }
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
   }
 
 };

@@ -29,5 +29,8 @@ export default {
   setLive(state, value) {
     state.live = value;
   },
+  setPeersId(state, value){
+    state.peersId=value;
+  }
 
 };

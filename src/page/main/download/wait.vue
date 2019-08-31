@@ -26,7 +26,15 @@ export default {
     (function update() {
       if (that.$route.fullPath === "/wait") {
         // console.log(that)
-        that.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.tellWaiting", id: common.getReqId(common.reqType.sendTellWaitREQ) ,params:[-1,1000]});
+        that.$store.dispatch(
+          "sendToWebSocket",
+          {
+            jsonrpc: "2.0",
+            method: "aria2.tellWaiting",
+            id: common.getReqId(common.reqType.sendTellWaitREQ) ,
+            params:[-1,1000]
+          }
+        );
         setTimeout(() => {
           update();
         }, 3000);

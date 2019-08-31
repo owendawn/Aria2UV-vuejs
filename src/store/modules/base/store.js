@@ -22,6 +22,7 @@ let state = {
     "uploadSpeed": "--"
   },
   peers: [],
+  peersId:null,
   toDownloads: [],
   toWaits: [],
   toFinishs: [],

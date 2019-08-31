@@ -85,7 +85,7 @@
     </template>
     <el-tabs
       type="border-card"
-      @tab-click="this.tabChange"
+      @tab-click="this.tabClick"
     >
       <el-tab-pane label=" 概况">
         <el-table
@@ -116,27 +116,31 @@
         v-if="this.type!=='FTP'"
       >
         <div class="piece-info">
-          <span :title="this.pieces.complete+'/'+this.pieces.total+'块'">
+          <span :title="this.pieces.complete+'/'+this.$props.todo.numPieces+'块'">
             <!-- <span
               class="piece filled"
               style="vertical-align:middle"
             ></span>  -->
-            <el-badge :value="this.pieces.complete" class="item" ><el-button size="small" type="success">已完成</el-button></el-badge>
+            <el-badge :value="this.pieces.complete" class="item" >
+              <el-button size="small" type="success">已完成</el-button>
+            </el-badge>
             </span>
             &emsp;&emsp;&emsp;&emsp;
-          <span :title="(this.pieces.total-this.pieces.complete) +'/'+this.pieces.total+'块'">
+          <span :title="(Number(this.$props.todo.numPieces)-this.pieces.complete) +'/'+this.pieces.total+'块'">
             <!-- <span
               class="piece"
               style="vertical-align:middle"
             ></span>  -->
-            <el-badge :value="this.pieces.total-this.pieces.complete" class="item"><el-button size="small">未完成</el-button></el-badge>
+            <el-badge :value="Number(this.$props.todo.numPieces)-this.pieces.complete" class="item">
+              <el-button size="small">未完成</el-button>
+            </el-badge>
             </span>
         </div>
         <div>
           <el-progress
            :text-inside="true" 
            :stroke-width="66" 
-           :percentage="(this.pieces.complete/this.pieces.total*100).toFixed(4)" 
+           :percentage="(this.pieces.complete/Number(this.$props.todo.numPieces)*100).toFixed(4)"
            status="success">
            </el-progress>
         </div>
@@ -145,39 +149,15 @@
         label="文件列表"
         v-if="!!this.$props.todo.bittorrent"
       >
-        <div style="display: flex;align-content: space-between;">
-          <div style="flex:1">
-            <el-tag>文件总数（{{this.$props.todo.files.length}}）</el-tag>
-          </div>
-          <el-button
-            type="primary"
-            size="mini"
-            round
-            @click="this.rechooseFile"
-            v-if="['active','paused'].indexOf(this.$props.todo.status)!==-1"
-          >上传<i class="el-icon-upload el-icon--right"></i></el-button>
-        </div>
-        <el-tree
-          :data="this.getFileTree()"
-          show-checkbox
-          default-expand-all
-          node-key="id"
-          :render-content="this.drawTreeLine"
-          ref="tree"
-          highlight-current
-          :props="defaultProps"
-          :default-checked-keys="this.checks"
-          @check-change="this.checkChange"
-        >
-        </el-tree>
+       <p-to-download-files :todo="this.$props.todo"></p-to-download-files>
       </el-tab-pane>
       <el-tab-pane
         label="链接详情"
         v-if="this.$props.todo.status==='active'"
       >
-      <el-button 
-      type="primary" 
-      :loading="this.hasLaodPeers&&this.getPeersTable().length==0"
+      <el-button
+      type="primary"
+      :loading="this.hasLaodPeers&&this.getPeersTable().length===0"
       @click="this.getPeerInfos"
       >
         加载{{this.hasLaodPeers?(this.getPeersTable().length>0?"":"......"):""}}
@@ -234,7 +214,7 @@ import 'vue-awesome/icons/download'
 
 import store from "../store/modules/base/store.js"
 import common from "../assets/util/common.js"
-import PanUtil from "../assets/util/PanUtil.js"
+
 import { setInterval, clearInterval, setTimeout } from 'timers';
 export default {
   store,
@@ -256,14 +236,9 @@ export default {
       pieces:this.getPieces(),
       files: this.$props.todo.files,
       checks: [],
-      defaultProps: {
-        children: 'children',
-        label(data, node) { return (data.name); }
-      }
     };
   },
   mounted() {
-    // console.log(PanUtil.toTree(this.getFiles2(), "id", "pid", "name"))
     if (this.$props.todo.bittorrent) {
       if (this.$props.todo.bittorrent.info) {
         this.type = "Torrent"
@@ -278,35 +253,37 @@ export default {
       this.name = "☢ " + decodeURIComponent(this.$props.todo.files[0].uris[0].uri.substring(this.$props.todo.files[0].uris[0].uri.lastIndexOf("/") + 1));
     } else if (new RegExp("^https?://").test(this.$props.todo.files[0].uris[0].uri)) {
       this.type = "HTTP/HTTPS";
-      this.name = "☪ " + decodeURIComponent(this.$props.todo.files[0].path.substring(this.$props.todo.files[0].path.lastIndexOf("/") + 1));
+      this.name = "☪ " + decodeURIComponent(
+        this.$props.todo.files[0].path.substring(this.$props.todo.files[0].path.lastIndexOf("/") + 1)
+        ||this.$props.todo.files[0].uris[0].uri.substring(this.$props.todo.files[0].uris[0].uri.lastIndexOf("/") + 1)
+      );
     }
   },
   methods: {
-    drawTreeLine(h, { node, data, store }){
-      return (<span title={data.name}>{
-        (!node.isLeaf ?
-              "♜ "
-              : "✉ "
-              + common.getSize(data.data.data.length) + " - "
-              + (data.data.data.length === "0" ?
-                "0" :
-                (
-                  Math.round(
-                    Number(data.data.data.completedLength) * 10000
-                    / Number(data.data.data.length)
-                  ) / 100
-                  + "% | "
-                )
-              )
-        ) + data.name
-      }</span>);
+    tabClick(){
+
     },
     getPeerInfos(){
       this.hasLaodPeers=true;
-        this.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.getPeers", id: common.getReqId(common.reqType.sendGetPeersREQ), params: [this.$props.todo.gid] })
-    },
-    tabChange(v, e) {
-     
+      this.$store.dispatch("postToAjax",{
+            jsonrpc: "2.0",
+            method: "aria2.getPeers",
+            id: common.getReqId(common.reqType.sendGetPeersREQ),
+            params: [
+              this.$props.todo.gid
+            ]
+      });
+      this.$store.commit("setPeersId",this.$props.todo.gid);
+      this.hasLaodPeers=false;
+      // this.$store.dispatch(
+      //   "sendToWebSocket",
+      //   {
+      //     jsonrpc: "2.0",
+      //     method: "aria2.getPeers",
+      //     id: common.getReqId(common.reqType.sendGetPeersREQ),
+      //     params: [this.$props.todo.gid]
+      //   }
+      // );
     },
     handleChange(val) {
       console.log(val);
@@ -354,98 +331,14 @@ export default {
       }
       return re;
     },
-    getFiles2() {
-      let diridx = 0;
-      let map = {};
-      let arr = [];
-      const step = "&emsp;&emsp;&emsp;&emsp;";
-      // if (this.files === null || this.files.length === 0) {
-        // this.files = this.$props.todo.files;
-      // }
-      this.files.forEach(it => {
-        var path = it.path.replace(this.dir.replace("\\", "/"), "");
-        if (path[0] === "/") {
-          path = path.substring(1);
-        }
-        let dirs = path.split("/");
-        if (dirs.length === 1) {
-          arr.push({ id: it.index, key: "0|" + dirs[0], name: dirs[0], pid: 0, data: it });
-        } else {
-          for (let i = 1; i < dirs.length; i++) {
-            if (!map[(i - 1) + "|" + dirs[i - 1]]) {
-              let id = "dir_" + diridx++;
-              map[(i - 1) + "|" + dirs[i - 1]] = id;
-              arr.push({ id: id, key: (i - 1) + "|" + dirs[i - 1], name: dirs[i - 1], pid: 0, data: it });
-            }
-            if (i == dirs.length - 1) {
-              arr.push({ id: it.index, key: i + "|" + dirs[i], name: dirs[i], pid: map[(i - 1) + "|" + dirs[i - 1]], data: it });
-            } else {
-              if (!map[i + "|" + dirs[i]]) {
-                let id = "dir_" + diridx++;
-                map[i + "|" + dirs[i]] = id;
-                arr.push({ id: id, key: i + "|" + dirs[i], name: dirs[i], pid: map[(i - 1) + "|" + dirs[i - 1]], data: it });
-              }
-            }
-          }
-        }
-      })
-      return arr;
-    },
-    getFileTree() {
-      return [PanUtil.toTree(this.getFiles2(), 'id', 'pid', 'name')]
-    },
-    checkChange(it, choose, pchoose) {
-      this.checks = this.$refs.tree.getCheckedKeys();
-    },
+
+
     getPieces() {
-      // if (this.isCollapse) {
-      //   return {total:1,complete:1};
-      // }
-      // let arr1 = [];
-      // let complete = 0;
-      // let total=0;
-      // if (this.$props.todo.bitfield) {
-      //   for(let i=0;i<this.$props.todo.bitfield.length;i++){
-      //     total+=4;
-      //     switch(this.$props.todo.bitfield.charAt(i)){
-      //       case "0":{
-      //         // arr1 = arr1.concat(0, 0, 0, 0);
-      //         break;
-      //       }
-      //       case "8":{
-      //         // arr1 = arr1.concat(1, 0, 0, 0)
-      //         complete+=1;
-      //         break;
-      //       }
-      //       case "c":{
-      //         // arr1 = arr1.concat(1, 1, 0, 0)
-      //         complete+=2;
-      //         break;
-      //       }
-      //       case "e":{
-      //         // arr1 = arr1.concat(1, 1, 1, 0)
-      //         complete+=3;
-      //         break;
-      //       }
-      //       case "f":{
-      //         // arr1 = arr1.concat(1, 1, 1, 1)
-      //         complete+=4;
-      //         break;
-      //       }
-      //     }
-      //   }
-      // }
-      // let size = 0;
-      // this.$props.todo.files.forEach(it => {
-      //   if (it.selected === "false") {
-      //     size+=Number(it.length);
-      //   }
-      // });
-      // return {total,complete};
-      return {
-        total:Number(this.$props.todo.numPieces),
-        complete:Math.round(Number(this.$props.todo.completedLength)/(Number(this.$props.todo.totalLength)/Number(this.$props.todo.numPieces)))
-      };
+      return common.countBitfield(this.$props.todo.bitfield)
+      // return {
+      //   total:Number(this.$props.todo.numPieces),
+      //   complete:Math.round(Number(this.$props.todo.completedLength)/(Number(this.$props.todo.totalLength)/Number(this.$props.todo.numPieces)))
+      // };
     },
     parsePeerInfo(peerid) {
       try {
@@ -463,13 +356,15 @@ export default {
       }
     },
     getPeersTable() {
+      if(this.$store.state.peersId!==this.$props.todo.gid){
+        return [];
+      }
       return this.$store.state.peers.map(it => {
         it.name = it.ip + ":" + it.port
         it.type = this.parsePeerInfo(it.peerId);
         it.downloadSpeedStr = common.getSize(it.downloadSpeed) + "/s";
         it.uploadSpeedStr = common.getSize(it.uploadSpeed) + "/s";
-        let arr = common.parseHexStringToBitArray(it.bitfield);
-        it.percent = Math.round(arr.filter(it => it === 1).length / arr.length * 10000) / 100 + "%";
+        it.percent = common.countBitfield(it.bitfield).percent;
         it.state = it.peerChoking === "false" ? "通畅" : "堵塞";
         return it;
       });
@@ -485,7 +380,16 @@ export default {
           break;
         }
         case 'restart': {
-          this.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.removeDownloadResult", id: common.getReqId(common.reqType.sendRemoveDownloadResultREQ), params: [this.$props.todo.gid] })
+          console.log(this.$props.todo)
+          this.$store.dispatch(
+            "sendToWebSocket",
+            {
+              jsonrpc: "2.0",
+              method: "aria2.removeDownloadResult",
+              id: common.getReqId(common.reqType.sendRemoveDownloadResultREQ),
+              params: [this.$props.todo.gid]
+            }
+          )
           if (this.type === "Torrent" || this.type === "Magnet") {
             this.$store.dispatch("sendToWebSocket", {
               jsonrpc: "2.0",
@@ -496,7 +400,7 @@ export default {
                 this.$props.todo
               ]
             })
-          } else if (this.type === "FTP") {
+          } else if (this.type === "FTP"||this.type==="HTTP/HTTPS") {
             this.$store.dispatch("sendToWebSocket", {
               jsonrpc: "2.0",
               method: "aria2.addUri",
@@ -521,24 +425,7 @@ export default {
         }
       }
     },
-    rechooseFile() {
-      console.log(this.$refs.tree.getCheckedKeys());
-      this.$store.dispatch("sendToWebSocket", {
-        jsonrpc: "2.0",
-        method: "aria2.changeOption",
-        id: common.getReqId(common.reqType.sendChangeOptionResultREQ),
-        params: [
-          this.$props.todo.gid,
-          { "select-file": this.$refs.tree.getCheckedKeys().join(",") }
-        ]
-      })
-      setTimeout(() => {
-        if (this.checks.sort().toString() !== this.$props.todo.files.filter(it => it.selected === 'true').map(it => it.index).sort().toString()) {
-          console.info("任务下载文件确认已变更")
-          this.checks = this.$props.todo.files.filter(it => it.selected === 'true').map(it => it.index);
-        }
-      }, 3000);
-    }
+
   }
 }
 </script>

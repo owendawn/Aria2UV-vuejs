@@ -25,7 +25,38 @@ export default {
     let that = this;
     (function update() {
       if (that.$route.fullPath === "/finish") {
-        that.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.tellStopped", id: common.getReqId(common.reqType.sendTellFinishREQ) ,params:[-1,1000]});
+        that.$store.dispatch(
+          "sendToWebSocket",
+          {
+            jsonrpc: "2.0",
+            method: "aria2.tellStopped",
+            id: common.getReqId(common.reqType.sendTellFinishREQ) ,
+            params:[
+              -1,
+              1000,
+              [
+                "bitfield",
+                "bittorrent",
+                "completedLength",
+                "connections",
+                "dir",
+                "downloadSpeed",
+                "files",
+                "following",
+                "gid",
+                "infoHash",
+                "numPieces",
+                "numSeeders",
+                "pieceLength",
+                "seeder",
+                "status",
+                "totalLength",
+                "uploadLength",
+                "uploadSpeed"
+              ]
+            ]
+          }
+        );
         setTimeout(() => {
           update();
         }, 3000);

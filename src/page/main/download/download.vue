@@ -296,8 +296,8 @@ export default {
     // console.log(this.$store)
   },
   beforeDestroy(){
-     if(that.timeout!==null){
-          clearTimeout(that.timeout);
+     if(this.timeout!==null){
+          clearTimeout(this.timeout);
         }
   },
   computed: mapState({
@@ -313,7 +313,32 @@ export default {
           clearTimeout(that.timeout);
         }
         if (that.$route.fullPath === "/download") {
-          that.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.tellActive", id: common.getReqId(common.reqType.sendTellActiveREQ) });
+          that.$store.dispatch("sendToWebSocket",
+            {
+              jsonrpc: "2.0",
+              method: "aria2.tellActive",
+              id: common.getReqId(common.reqType.sendTellActiveREQ),
+              params:[[
+                "bitfield",
+                "bittorrent",
+                "completedLength",
+                "connections",
+                "dir",
+                "downloadSpeed",
+                "files",
+                "following",
+                "gid",
+                "infoHash",
+                "numPieces",
+                "numSeeders",
+                "pieceLength",
+                "seeder",
+                "status",
+                "totalLength",
+                "uploadLength",
+                "uploadSpeed"
+              ]]
+            });
           that.timeout=setTimeout(() => {
             that.timeout=null;
             update();
@@ -390,7 +415,7 @@ export default {
       this.$store.dispatch("sendToWebSocket",
         {
           jsonrpc: "2.0",
-          method: "aria2.addTorrent",
+          method: "aria2.addMetaLink",
           id: common.getReqId(common.reqType.sendAddMetalinkREQ),
           params: [
             [this.metaJob.link],

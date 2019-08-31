@@ -131,5 +131,22 @@ export default {
       }
     });
     return arr1;
-  }
+  },
+  countBitfield(text) {
+    var len = text.length;
+    var p, one = 0;
+    for (var i=0; i<len; i++) {
+      p = parseInt(text[i], 16);
+      for (var j=0; j<4; j++) {
+        one += (p & 1);
+        p >>= 1;
+      }
+    }
+    return{
+      total:4*len,
+      complete:one,
+      uncomplete:4*len-one,
+      percent:Math.floor(one/(4*len)*100)+"%"
+    };
+  },
 }
