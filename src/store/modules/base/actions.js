@@ -98,27 +98,27 @@ export default {
       } else {
         switch (data.method) {
           case "aria2.onDownloadStart": {
-            PanUtil.notify("通知", "任务开始下载", "http://i67.tinypic.com/2d83xhg.jpg");
+            PanUtil.notify("通知", "任务开始下载", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724857976783_201117043_H1200.png");
             break;
           }
           case "aria2.onBtDownloadComplete": {
-            PanUtil.notify("通知", "种子下载完毕", "http://i67.tinypic.com/2d83xhg.jpg");
+            PanUtil.notify("通知", "种子下载完毕", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724855436782_201117043_H1200.png");
             break;
           }
           case "aria2.onDownloadComplete": {
-            PanUtil.notify("通知", "任务下载完毕", "http://i67.tinypic.com/2d83xhg.jpg");
+            PanUtil.notify("通知", "任务下载完毕", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724855436782_201117043_H1200.png");
             break;
           }
           case "aria2.onDownloadPause": {
-            PanUtil.notify("通知", "任务下载暂停", "http://i67.tinypic.com/2d83xhg.jpg");
+            PanUtil.notify("通知", "任务下载暂停", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724857180313_201117043_H1200.png");
             break;
           }
           case "aria2.onDownloadError": {
-            PanUtil.notify("通知", "任务下载异常终止", "http://i65.tinypic.com/5uk1l3.jpg");
+            PanUtil.notify("通知", "任务下载异常终止", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724856682249_201117043_H1200.png");
             break;
           }
           case "aria2.onDownloadStop": {
-            PanUtil.notify("通知", "任务下载终止", "http://i65.tinypic.com/5uk1l3.jpg");
+            PanUtil.notify("通知", "任务下载终止", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724857180313_201117043_H1200.png");
             break;
           }
         }

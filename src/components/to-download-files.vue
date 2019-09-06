@@ -9,7 +9,7 @@
       size="mini"
       round
       @click="this.rechooseFile"
-      v-if="['active','paused'].indexOf(this.$props.todo.status)!==-1"
+      v-if="['active','paused'].indexOf(this.data.status)!==-1"
     >上传<i class="el-icon-upload el-icon--right"></i></el-button>
   </div>
   <el-tree
@@ -33,8 +33,7 @@
 export default {
   data() {
     return {
-      files: this.$props.todo.files,
-      dir: this.$props.todo.dir,
+      data:{},
       checks: [],
       defaultProps: {
         children: 'children',
@@ -46,6 +45,11 @@ export default {
     todo: {
       type: Object,
       required: true
+    }
+  },
+  watch:{
+    todo:function (value) {
+      this.data=value;
     }
   },
   mounted(){
@@ -83,11 +87,8 @@ export default {
       let map = {};
       let arr = [];
       const step = "&emsp;&emsp;&emsp;&emsp;";
-      // if (this.files === null || this.files.length === 0) {
-      // this.files = this.$props.todo.files;
-      // }
-      this.files.forEach(it => {
-        var path = it.path.replace(this.dir.replace("\\", "/"), "");
+      this.$props.todo.files.forEach(it => {
+        var path = it.path.replace(this.$props.todo.dir.replace("\\", "/"), "");
         if (path[0] === "/") {
           path = path.substring(1);
         }

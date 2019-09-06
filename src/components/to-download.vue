@@ -134,25 +134,25 @@
       </el-tab-pane>
       <el-tab-pane
         label="区块信息"
-        v-if="this.type!=='FTP' && this.pieces.validate"
+        v-if="this.type!=='FTP' && this.getPieces().validate"
       >
         <div class="piece-info">
-          <span :title="this.pieces.complete+'/'+this.$props.todo.numPieces+'块'">
+          <span :title="this.getPieces().complete+'/'+this.$props.todo.numPieces+'块'">
             <!-- <span
               class="piece filled"
               style="vertical-align:middle"
             ></span>  -->
-            <el-badge :value="this.pieces.complete" class="item">
+            <el-badge :value="this.getPieces().complete" class="item">
               <el-button size="small" type="success">已完成</el-button>
             </el-badge>
             </span>
           &emsp;&emsp;&emsp;&emsp;
-          <span :title="(Number(this.$props.todo.numPieces)-this.pieces.complete) +'/'+this.pieces.total+'块'">
+          <span :title="(Number(this.$props.todo.numPieces)-this.getPieces().complete) +'/'+this.getPieces().total+'块'">
             <!-- <span
               class="piece"
               style="vertical-align:middle"
             ></span>  -->
-            <el-badge :value="Number(this.$props.todo.numPieces)-this.pieces.complete" class="item">
+            <el-badge :value="Number(this.$props.todo.numPieces)-this.getPieces().complete" class="item">
               <el-button size="small">未完成</el-button>
             </el-badge>
             </span>
@@ -166,7 +166,7 @@
           <el-progress
             :text-inside="true"
             :stroke-width="66"
-            :percentage="(this.pieces.complete/Number(this.$props.todo.numPieces)*100).toFixed(4)"
+            :percentage="(this.getPieces().complete/Number(this.$props.todo.numPieces)*100).toFixed(4)"
             status="success">
           </el-progress>
         </div>
@@ -269,7 +269,6 @@
         dir: this.$props.todo.dir,
         connectInterval: null,
         name: null,
-        pieces: this.getPieces(),
         files: this.$props.todo.files,
         checks: [],
         ups: [],
