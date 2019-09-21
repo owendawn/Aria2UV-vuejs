@@ -127,7 +127,7 @@ export default {
         id: common.getReqId(common.reqType.sendChangeOptionResultREQ),
         params: [
           this.$props.todo.gid,
-          { "select-file": this.$refs.tree.getCheckedKeys().join(",") }
+          { "select-file": this.$refs.tree.getCheckedKeys().filter(it=>it.indexOf("dir_")<0).join(",") }
         ]
       });
       setTimeout(() => {

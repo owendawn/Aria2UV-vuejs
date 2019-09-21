@@ -407,8 +407,6 @@
         }
         return re;
       },
-
-
       getPieces() {
         return common.countBitfield(this.$props.todo.bitfield)
       },
