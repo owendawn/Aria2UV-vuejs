@@ -365,6 +365,7 @@ export default {
       this.metaJob['split'] = Number(this.globalOption['split']);
     },
     toggleModal() {
+      this.linkJob.link='';
       this.refreshOptions()
       this.outerVisible = true;
     },
