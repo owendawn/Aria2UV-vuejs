@@ -5,6 +5,20 @@ import {
 } from 'element-ui';
 // import axios from 'axios'
 
+function handleAndNotify(content,data) {
+  if (data.error) {
+    Message.error({
+      dangerouslyUseHTMLString: true,
+      message: content + '<br><small>code:' + data.error.message + '</small>'
+    });
+  } else {
+    Message.info({
+      dangerouslyUseHTMLString: true,
+      message: content + '<br><small>code:' + data.result + '</small>'
+    });
+  }
+}
+
 export default {
   initWebsocket({
     commit,
@@ -35,19 +49,7 @@ export default {
       }, 10000)
     };
 
-    function handleAndNotify(content,data) {
-      if (data.error) {
-        Message.error({
-          dangerouslyUseHTMLString: true,
-          message: content + '<br><small>code:' + data.error.message + '</small>'
-        });
-      } else {
-        Message.info({
-          dangerouslyUseHTMLString: true,
-          message: content + '<br><small>code:' + data.result + '</small>'
-        });
-      }
-    }
+
 
     websocket.onmessage = function ({
       data
@@ -61,39 +63,10 @@ export default {
           commit("setGlobalStat", data.result);
         } else if (new RegExp("^sendTellActiveREQ_").test(data.id)) {
           commit("setToDownloads", data.result);
-        } else if (new RegExp("^sendGetPeersREQ_").test(data.id)) {
-          commit("setPeers", data.result);
-        } else if (new RegExp("^sendTellFinishREQ_").test(data.id)) {
+        }  else if (new RegExp("^sendTellFinishREQ_").test(data.id)) {
           commit("setToFinishs", data.result);
         } else if (new RegExp("^sendTellWaitREQ_").test(data.id)) {
           commit("setToWaits", data.result);
-        } else if (new RegExp("^sendGetGlobalOptionREQ_").test(data.id)) {
-          commit("setGlobalOption", data.result);
-          window.postMessage({act:'updateGlobalOption'},"*");
-        } else if (
-          new RegExp("^sendAddUriREQ_").test(data.id) ||
-          new RegExp("^sendAddBtREQ_").test(data.id) ||
-          new RegExp("^sendAddMetalinkREQ_").test(data.id)
-        ) {
-          handleAndNotify("任务下载开始",data);
-        } else if (new RegExp("^sendPauseREQ_").test(data.id)) {
-          handleAndNotify("任务下载已暂停",data);
-        } else if (new RegExp("^sendUnpauseREQ_").test(data.id)) {
-          handleAndNotify("任务继续下载",data);
-        } else if (new RegExp("^sendRemoveREQ_").test(data.id)) {
-          handleAndNotify("任务停止下载",data);
-        } else if (new RegExp("^sendForceRemoveREQ_").test(data.id)) {
-          handleAndNotify("任务强制停止下载",data);
-        } else if (new RegExp("^sendRemoveDownloadResultREQ_").test(data.id)) {
-          handleAndNotify("任务已移除",data);
-        } else if (new RegExp("^sendRestartREQ_").test(data.id)) {
-          handleAndNotify("任务重新下载开始",data);
-        } else if (new RegExp("^sendChangeOptionResultREQ_").test(data.id)) {
-          handleAndNotify("更新任务参数",data);
-        } else if (new RegExp("^sendChangeGlobalOptionREQ_").test(data.id)) {
-          handleAndNotify("更新系统参数",data);
-        } else if (new RegExp("^sendShutdownREQ_").test(data.id)) {
-          handleAndNotify("关闭Aria2后台服务",data);
         }
       } else {
         switch (data.method) {
@@ -146,10 +119,67 @@ export default {
         }
       })
       .then(function (re) {
-        switch (re.data.id.substring(0,re.data.id.indexOf("_"))) {
-          case "sendGetPeersREQ":{
-            commit("setPeers",re.data.result)
+        let data=re.data;
+        switch (data.id.substring(0,data.id.indexOf("_"))) {
+          case common.reqType.sendGetPeersREQ:{
+            commit("setPeers",data.result)
             break;
+          }
+          case common.reqType.sendGetGlobalOptionREQ:{
+            commit("setGlobalOption", data.result);
+            window.postMessage({act:'updateGlobalOption'},"*");
+            break;
+          }
+          case common.reqType.sendAddUriREQ:{
+            handleAndNotify("任务下载开始",data);
+            break;
+          }
+          case common.reqType.sendAddBtREQ:{
+            handleAndNotify("任务下载开始",data);
+            break;
+          }
+          case common.reqType.sendAddMetalinkREQ:{
+            handleAndNotify("任务下载开始",data);
+            break;
+          }
+          case common.reqType.sendPauseREQ:{
+            handleAndNotify("任务下载已暂停",data);
+            break;
+          }
+          case common.reqType.sendUnpauseREQ:{
+            handleAndNotify("任务继续下载",data);
+            break;
+          }
+          case common.reqType.sendRemoveREQ:{
+            handleAndNotify("任务停止下载",data);
+            break;
+          }
+          case common.reqType.sendForceRemoveREQ:{
+            handleAndNotify("任务强制停止下载",data);
+            break;
+          }
+          case common.reqType.sendRemoveDownloadResultREQ:{
+            handleAndNotify("任务已移除",data);
+            break;
+          }
+          case common.reqType.sendRestartREQ:{
+            handleAndNotify("任务重新下载开始",data);
+            break;
+          }
+          case common.reqType.sendChangeOptionResultREQ:{
+            handleAndNotify("更新任务参数",data);
+            break;
+          }
+          case common.reqType.sendChangeGlobalOptionREQ:{
+            handleAndNotify("更新系统参数",data);
+            break;
+          }
+          case common.reqType.sendShutdownREQ:{
+            handleAndNotify("关闭Aria2后台服务",data);
+            break;
+          }
+          default:{
+            alert("异常数据："+JSON.stringify(data))
           }
         }
       })

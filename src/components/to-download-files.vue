@@ -121,7 +121,7 @@ export default {
     },
     rechooseFile() {
       console.log(this.$refs.tree.getCheckedKeys());
-      this.$store.dispatch("sendToWebSocket", {
+      this.$store.dispatch("postToAjax", {
         jsonrpc: "2.0",
         method: "aria2.changeOption",
         id: common.getReqId(common.reqType.sendChangeOptionResultREQ),

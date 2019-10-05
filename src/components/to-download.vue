@@ -332,15 +332,6 @@
         });
         this.$store.commit("setPeersId", this.$props.todo.gid);
         this.hasLaodPeers = false;
-        // this.$store.dispatch(
-        //   "sendToWebSocket",
-        //   {
-        //     jsonrpc: "2.0",
-        //     method: "aria2.getPeers",
-        //     id: common.getReqId(common.reqType.sendGetPeersREQ),
-        //     params: [this.$props.todo.gid]
-        //   }
-        // );
       },
       handleChange(val) {
         console.log(val);
@@ -442,7 +433,7 @@
       chooseCommand(command) {
         switch (command) {
           case 'pause': {
-            this.$store.dispatch("sendToWebSocket", {
+            this.$store.dispatch("postToAjax", {
               jsonrpc: "2.0",
               method: "aria2.pause",
               id: common.getReqId(common.reqType.sendPauseREQ),
@@ -451,7 +442,7 @@
             break;
           }
           case 'unpause': {
-            this.$store.dispatch("sendToWebSocket", {
+            this.$store.dispatch("postToAjax", {
               jsonrpc: "2.0",
               method: "aria2.unpause",
               id: common.getReqId(common.reqType.sendUnpauseREQ),
@@ -462,7 +453,7 @@
           case 'restart': {
             console.log(this.$props.todo)
             this.$store.dispatch(
-              "sendToWebSocket",
+              "postToAjax",
               {
                 jsonrpc: "2.0",
                 method: "aria2.removeDownloadResult",
@@ -471,7 +462,7 @@
               }
             )
             if (this.type === "Torrent" || this.type === "Magnet") {
-              this.$store.dispatch("sendToWebSocket", {
+              this.$store.dispatch("postToAjax", {
                 jsonrpc: "2.0",
                 method: "aria2.addUri",
                 id: common.getReqId(common.reqType.sendRestartREQ),
@@ -481,7 +472,7 @@
                 ]
               })
             } else if (this.type === "FTP" || this.type === "HTTP/HTTPS") {
-              this.$store.dispatch("sendToWebSocket", {
+              this.$store.dispatch("postToAjax", {
                 jsonrpc: "2.0",
                 method: "aria2.addUri",
                 id: common.getReqId(common.reqType.sendRestartREQ),
@@ -495,17 +486,17 @@
           }
           case 'stop': {
             //仅针对正在下载的任务
-            this.$store.dispatch("sendToWebSocket", {
+            this.$store.dispatch("postToAjax", {
               jsonrpc: "2.0",
               method: "aria2.remove",
               id: common.getReqId(common.reqType.sendRemoveREQ),
               params: [this.$props.todo.gid]
             })
-            // this.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.forceRemove", id: common.getReqId(common.reqType.sendForceRemoveREQ), params: [this.$props.todo.gid] })
+            // this.$store.dispatch("postToAjax", { jsonrpc: "2.0", method: "aria2.forceRemove", id: common.getReqId(common.reqType.sendForceRemoveREQ), params: [this.$props.todo.gid] })
             break;
           }
           case 'remove': {
-            this.$store.dispatch("sendToWebSocket", {
+            this.$store.dispatch("postToAjax", {
               jsonrpc: "2.0",
               method: "aria2.removeDownloadResult",
               id: common.getReqId(common.reqType.sendRemoveDownloadResultREQ),

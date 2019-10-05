@@ -146,7 +146,7 @@ export default {
       this.$store.state.websocket.close();
     }
     this.$store.dispatch("initWebsocket")
-    this.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.getGlobalOption", id: common.getReqId(common.reqType.sendGetGlobalOptionREQ) });
+    this.$store.dispatch("postToAjax", { jsonrpc: "2.0", method: "aria2.getGlobalOption", id: common.getReqId(common.reqType.sendGetGlobalOptionREQ) });
     setInterval(it => {
       if (!this.live) { return }
       this.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.getGlobalStat", id: common.getReqId(common.reqType.sendGetGlobalStatREQ) });
@@ -166,7 +166,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$store.dispatch("sendToWebSocket", {
+        this.$store.dispatch("postToAjax", {
           jsonrpc: "2.0",
           method: "aria2.shutdown",
           id: common.getReqId(common.reqType.sendShutdownREQ)

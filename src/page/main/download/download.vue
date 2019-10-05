@@ -377,7 +377,7 @@ export default {
       this.outerVisible3 = true;
     },
     addLink() {
-      this.$store.dispatch("sendToWebSocket",
+      this.$store.dispatch("postToAjax",
         {
           jsonrpc: "2.0",
           method: "aria2.addUri",
@@ -407,7 +407,7 @@ export default {
       }
     },
     addBt(e) {
-      this.$store.dispatch("sendToWebSocket",
+      this.$store.dispatch("postToAjax",
         {
           jsonrpc: "2.0",
           method: "aria2.addTorrent",
@@ -422,7 +422,7 @@ export default {
       this.outerVisible2 = false;
     },
     addMetaLink() {
-      this.$store.dispatch("sendToWebSocket",
+      this.$store.dispatch("postToAjax",
         {
           jsonrpc: "2.0",
           method: "aria2.addMetalink",

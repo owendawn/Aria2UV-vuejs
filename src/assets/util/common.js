@@ -1,23 +1,24 @@
 export default {
   reqType: {
-    sendGetGlobalStatREQ: "sendGetGlobalStatREQ",
-    sendTellActiveREQ: "sendTellActiveREQ",
     sendGetPeersREQ: "sendGetPeersREQ",
-    sendTellWaitREQ: "sendTellWaitREQ",
-    sendTellFinishREQ: "sendTellFinishREQ",
     sendGetGlobalOptionREQ: "sendGetGlobalOptionREQ",
+    sendPauseREQ:"sendPauseREQ",
+    sendUnpauseREQ:"sendUnpauseREQ",
+    sendRemoveDownloadResultREQ:"sendRemoveDownloadResultREQ",
+    sendRestartREQ:"sendRestartREQ",
+    sendRemoveREQ:"sendRemoveREQ",
+    sendForceRemoveREQ:"sendForceRemoveREQ",
+    sendChangeOptionResultREQ:"sendChangeOptionResultREQ",
+    sendChangeGlobalOptionREQ:"sendChangeGlobalOptionREQ",
+    sendShutdownREQ:"sendShutdownREQ",
     sendAddUriREQ: "sendAddUriREQ",
     sendAddBtREQ:"sendAddBtREQ",
     sendAddMetalinkREQ:'sendAddMetalinkREQ',
-    sendPauseREQ:"sendPauseREQ",
-    sendUnpauseREQ:"sendUnpauseREQ",
-    sendRemoveREQ:"sendRemoveREQ",
-    sendForceRemoveREQ:"sendForceRemoveREQ",
-    sendRemoveDownloadResultREQ:"sendRemoveDownloadResultREQ",
-    sendRestartREQ:"sendRestartREQ",
-    sendChangeOptionResultREQ:"sendChangeOptionResultREQ",
-    sendChangeGlobalOptionREQ:"sendChangeGlobalOptionREQ",
-    sendShutdownREQ:"sendShutdownREQ"
+
+    sendGetGlobalStatREQ: "sendGetGlobalStatREQ",
+    sendTellActiveREQ: "sendTellActiveREQ",
+    sendTellWaitREQ: "sendTellWaitREQ",
+    sendTellFinishREQ: "sendTellFinishREQ",
   },
   getReqId(type) {
     return type + "_" + new Date().getTime();

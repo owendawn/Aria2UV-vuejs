@@ -126,12 +126,12 @@ export default {
     this.setting = Object.assign({}, this.$store.state.globalOption);
     console.log(this.$store.state.globalOption);
     window.addEventListener("message", ( e )=> {
-		if(e.data.act==="updateGlobalOption"){
+		    if(e.data.act==="updateGlobalOption"){
              this.setting = Object.assign({}, this.$store.state.globalOption);
         }
      }, false );
      if(Object.keys(this.setting)===0){
-         this.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.getGlobalOption", id: common.getReqId(common.reqType.sendGetGlobalOptionREQ) });
+         this.$store.dispatch("postToAjax", { jsonrpc: "2.0", method: "aria2.getGlobalOption", id: common.getReqId(common.reqType.sendGetGlobalOptionREQ) });
      }
 
   },
@@ -141,7 +141,7 @@ export default {
       return this.setting;
     },
     updateSetting() {
-      this.$store.dispatch("sendToWebSocket", {
+      this.$store.dispatch("postToAjax", {
         jsonrpc: "2.0",
         method: "aria2.changeGlobalOption",
         id: common.getReqId(common.reqType.sendChangeGlobalOptionREQ),
@@ -149,7 +149,7 @@ export default {
           this.setting
         ]
       });
-      this.$store.dispatch("sendToWebSocket", { jsonrpc: "2.0", method: "aria2.getGlobalOption", id: common.getReqId(common.reqType.sendGetGlobalOptionREQ) });
+      this.$store.dispatch("postToAjax", { jsonrpc: "2.0", method: "aria2.getGlobalOption", id: common.getReqId(common.reqType.sendGetGlobalOptionREQ) });
     }
 
   }
