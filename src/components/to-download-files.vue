@@ -54,9 +54,7 @@ export default {
   },
   mounted(){
     if (this.$props.todo.bittorrent) {
-      if (this.$props.todo.bitfield) {
         this.checks = this.$props.todo.files.filter(it => it.selected === 'true').map(it => it.index).concat();
-      }
     }
   },
   methods: {

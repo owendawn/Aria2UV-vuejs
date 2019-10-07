@@ -320,26 +320,8 @@ export default {
               jsonrpc: "2.0",
               method: "aria2.tellActive",
               id: common.getReqId(common.reqType.sendTellActiveREQ),
-              params:[[
-                "bitfield",
-                "bittorrent",
-                "completedLength",
-                "connections",
-                "dir",
-                "downloadSpeed",
-                "files",
-                "following",
-                "gid",
-                "infoHash",
-                "numPieces",
-                "numSeeders",
-                "pieceLength",
-                "seeder",
-                "status",
-                "totalLength",
-                "uploadLength",
-                "uploadSpeed"
-              ]]
+              params:[
+              ]
             });
           that.timeout=setTimeout(() => {
             that.timeout=null;
@@ -396,7 +378,7 @@ export default {
       let reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
       reader.onload = function (e) {
-        that.btJob.btContent = this.result.replace("data:application/octet-stream;base64,", "");
+        that.btJob.btContent = this.result.replace("data:application/x-bittorrent;base64,", "");
       }
     },
     changeMateLinkCode(e) {
@@ -408,13 +390,15 @@ export default {
       }
     },
     addBt(e) {
+      let base64=this.btJob.btContent;
+      this.btJob.btContent=null;
       this.$store.dispatch("postToAjax",
         {
           jsonrpc: "2.0",
           method: "aria2.addTorrent",
           id: common.getReqId(common.reqType.sendAddBtREQ),
           params: [
-            this.btJob.btContent,
+            base64,
             [],
             this.btJob
           ]
@@ -423,13 +407,15 @@ export default {
       this.outerVisible2 = false;
     },
     addMetaLink() {
+      let base64=this.metaJob.mateContent;
+      this.metaJob.mateContent=null;
       this.$store.dispatch("postToAjax",
         {
           jsonrpc: "2.0",
           method: "aria2.addMetalink",
           id: common.getReqId(common.reqType.sendAddMetalinkREQ),
           params: [
-            this.metaJob.mateContent,
+            base64,
             this.metaJob
           ]
         }

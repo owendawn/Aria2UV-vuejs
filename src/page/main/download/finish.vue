@@ -52,7 +52,8 @@ export default {
                 "status",
                 "totalLength",
                 "uploadLength",
-                "uploadSpeed"
+                "uploadSpeed",
+                "errorCode"
               ]
             ]
           }
