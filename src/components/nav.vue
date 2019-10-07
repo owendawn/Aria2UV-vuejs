@@ -80,17 +80,7 @@
       </a>
     </el-menu-item>
 
-    <el-menu-item
-      index="aria2-url"
-      class="pull-right nav-icon-right-sm"
-    >
-      <el-button
-        id="rpc-link"
-        class="text-white"
-        plain
-        @click="closeAria2Server"
-      > ws://localhost:6800/jsonrpc </el-button>
-    </el-menu-item>
+
 
     <el-menu-item class="pull-right nav-icon-right-sm">
       <p-icon
@@ -114,6 +104,17 @@
       <span>{{this.common.getSize(this.$store.state.globalStat.uploadSpeed)+"/s"}}</span>
     </el-menu-item>
 
+    <el-menu-item
+      index="aria2-url"
+      class="pull-right nav-icon-right-sm"
+    >
+      <el-button
+        id="rpc-link"
+        class="text-white"
+        plain
+        @click="closeAria2Server"
+      > ws://{{this.$store.state.ip}}:{{this.$store.state.port}}/jsonrpc</el-button>
+    </el-menu-item>
   </el-menu>
 </template>
 <script>

@@ -10,13 +10,13 @@
         <el-form-item style="text-align:center;">
           <el-col :span="16">
             <el-input v-model="setting.ip">
-              <template slot="prepend">ws://</template>
+              <template slot="prepend">[ ws | http ] : //</template>
               <template slot="append">:</template>
             </el-input>
           </el-col>
 
           <el-col :span="8">
-            <el-input v-model="setting.port">
+            <el-input v-model="setting.port" style="margin-left: -3px;">
               <template slot="append">/jsonrpc</template>
             </el-input>
           </el-col>
