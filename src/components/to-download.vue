@@ -68,12 +68,12 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item
             command="pause"
-            v-if="['active'].indexOf(this.$props.todo.status)!==-1"
+            v-if="['active','waiting'].indexOf(this.$props.todo.status)!==-1"
           >暂停
           </el-dropdown-item>
           <el-dropdown-item
             command="stop"
-            v-if="['active','paused'].indexOf(this.$props.todo.status)!==-1"
+            v-if="['active','paused','waiting'].indexOf(this.$props.todo.status)!==-1"
           >终止
           </el-dropdown-item>
           <el-dropdown-item
