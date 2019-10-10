@@ -378,7 +378,9 @@ export default {
       let reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
       reader.onload = function (e) {
-        that.btJob.btContent = this.result.replace("data:application/x-bittorrent;base64,", "");
+        that.btJob.btContent = this.result
+          .replace("data:application/octet-stream;base64,", "")
+          .replace("data:application/x-bittorrent;base64,", "");
       }
     },
     changeMateLinkCode(e) {
