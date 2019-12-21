@@ -19,7 +19,7 @@ function handleAndNotify(content,data) {
   }
 }
 
-export default {
+const fn= {
   initWebsocket({
     commit,
     state
@@ -71,27 +71,39 @@ export default {
       } else {
         switch (data.method) {
           case "aria2.onDownloadStart": {
-            PanUtil.notify("通知", "任务开始下载", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724857976783_201117043_H1200.png");
+            PanUtil.notify("通知", "任务开始下载"
+              // , "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724857976783_201117043_H1200.png"
+            );
             break;
           }
           case "aria2.onBtDownloadComplete": {
-            PanUtil.notify("通知", "种子下载完毕", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724855436782_201117043_H1200.png");
+            PanUtil.notify("通知", "种子下载完毕"
+              // , "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724855436782_201117043_H1200.png"
+            );
             break;
           }
           case "aria2.onDownloadComplete": {
-            PanUtil.notify("通知", "任务下载完毕", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724855436782_201117043_H1200.png");
+            PanUtil.notify("通知", "任务下载完毕"
+              // , "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724855436782_201117043_H1200.png"
+            );
             break;
           }
           case "aria2.onDownloadPause": {
-            PanUtil.notify("通知", "任务下载暂停", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724857180313_201117043_H1200.png");
+            PanUtil.notify("通知", "任务下载暂停"
+              // , "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724857180313_201117043_H1200.png"
+            );
             break;
           }
           case "aria2.onDownloadError": {
-            PanUtil.notify("通知", "任务下载异常终止", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724856682249_201117043_H1200.png");
+            PanUtil.notify("通知", "任务下载异常终止"
+              // , "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724856682249_201117043_H1200.png"
+            );
             break;
           }
           case "aria2.onDownloadStop": {
-            PanUtil.notify("通知", "任务下载终止", "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724857180313_201117043_H1200.png");
+            PanUtil.notify("通知", "任务下载终止"
+              // , "https://img1002.pocoimg.cn/image/poco/works/15/2019/0906/20/15677724857180313_201117043_H1200.png"
+            );
             break;
           }
         }
@@ -106,19 +118,19 @@ export default {
       state.websocket.send(JSON.stringify(data));
     }, state.websocket.readyState === common.readyState.CONNECTING ? 3000 : 0);
   },
-  postToAjax({
+  postToAjax:({
                commit,
                state
-             },data){
+             },params)=>{
     axios.post(
       "http://"+state.ip+":"+state.port+"/jsonrpc",
-      data,
+      params,
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         }
       })
-      .then(function (re) {
+      .then((re) =>{
         let data=re.data;
         switch (data.id.substring(0,data.id.indexOf("_"))) {
           case common.reqType.sendGetPeersREQ:{
@@ -128,6 +140,21 @@ export default {
           case common.reqType.sendGetGlobalOptionREQ:{
             commit("setGlobalOption", data.result);
             window.postMessage({act:'updateGlobalOption'},"*");
+            break;
+          }
+          case common.reqType.sendGetOptionREQ:{
+            commit("setOption", {data:data.result,id:params.params[0]});
+            break;
+          }
+          case common.reqType.sendChangeOptionREQ:{
+            handleAndNotify("修改参数",data);
+            const ps={
+              jsonrpc: "2.0",
+              method: "aria2.getOption",
+              id: common.getReqId(common.reqType.sendGetOptionREQ),
+              params: [params.params[0]]
+            }
+            fn.postToAjax({commit,state},ps)
             break;
           }
           case common.reqType.sendAddUriREQ:{
@@ -189,3 +216,5 @@ export default {
   }
 
 };
+
+export default fn;

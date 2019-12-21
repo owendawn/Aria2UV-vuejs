@@ -31,6 +31,10 @@ export default {
   },
   setPeersId(state, value){
     state.peersId=value;
+  },
+  setOption(state, value){
+    state.theOption[value.id]=value.data;
+    state.optionflag=new Date().getTime();
   }
 
 };

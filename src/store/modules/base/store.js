@@ -26,6 +26,8 @@ let state = {
   toDownloads: [],
   toWaits: [],
   toFinishs: [],
+  theOption:{},
+  optionflag:-1
 };
 
 export default new Vuex.Store({

@@ -14,6 +14,8 @@ export default {
     sendAddUriREQ: "sendAddUriREQ",
     sendAddBtREQ:"sendAddBtREQ",
     sendAddMetalinkREQ:'sendAddMetalinkREQ',
+    sendGetOptionREQ:'sendGetOptionREQ',
+    sendChangeOptionREQ:'sendChangeOptionREQ',
 
     sendGetGlobalStatREQ: "sendGetGlobalStatREQ",
     sendTellActiveREQ: "sendTellActiveREQ",

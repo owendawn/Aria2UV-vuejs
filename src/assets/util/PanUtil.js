@@ -139,7 +139,7 @@ const PanUtil = {
     notify:function showMsgNotification(title, msg, icon) {
         var options = {
             body: msg,
-            icon: icon||"image_url"
+            icon: icon
         };
         var instance;
         var Notification = window.Notification || window.mozNotification || window.webkitNotification;

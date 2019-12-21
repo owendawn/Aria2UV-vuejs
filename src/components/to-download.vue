@@ -2,8 +2,9 @@
 
   <el-collapse-item
     class="p-to-download"
-    @change="handleChange"
+    @change="this.handleChange"
     ref="chartPane"
+   :name="this.$props.todo.gid"
   >
     <template slot="title">
       <div class="download-header">
@@ -133,6 +134,12 @@
         </el-table>
       </el-tab-pane>
       <el-tab-pane
+        label="下载参数"
+        v-if="['active','paused','waiting'].indexOf(this.$props.todo.status)!==-1"
+      >
+        <p-to-download-option :guid="this.$props.todo.gid" :openGid="openGid"></p-to-download-option>
+      </el-tab-pane>
+      <el-tab-pane
         label="区块信息"
         v-if="this.type!=='FTP' && this.getPieces().validate"
       >
@@ -257,6 +264,10 @@
     props: {
       todo: {
         type: Object,
+        required: true
+      },
+      openGid: {
+        type: String,
         required: true
       }
     },
