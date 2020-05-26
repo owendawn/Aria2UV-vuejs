@@ -54,7 +54,7 @@
       class="pull-right nav-icon-right-sm"
     >
       <a
-        href="https://pan.baidu.com/s/1z5K2wFulPkm03bRnrjA4AQ"
+        href="https://gitee.com/owendawn/Resource/raw/master/aria2-1.34.0.zip"
         target="_blank"
       >
         <p-icon
@@ -69,7 +69,7 @@
       class="pull-right nav-icon-right-sm"
     >
       <a
-        href="https://github.com/acgotaku/BaiduExporter"
+        href="static/BaiduExporter.crx"
         target="_blank"
       >
         <p-icon
